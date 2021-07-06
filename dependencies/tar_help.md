@@ -3,6 +3,6 @@
 
 ```
 
-sudo tar -xzfv geckodriver-v0.29.1-linux32.tar.gz
+sudo tar -xzf geckodriver-v0.29.1-linux32.tar.gz
 
 ```
