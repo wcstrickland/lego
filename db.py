@@ -26,9 +26,3 @@ def get_all_users(cur):
 
 
 
-if __name__ == '__main__':
-    pass
-#    conn, cur = db_connect()
-#    name1 = "bill"
-#    bill_items = ('999/999', '000/000', '555/555')
-#    insert_user(cur, conn, name1, bill_items)
