@@ -1,0 +1,6 @@
+opts = {
+    "host":"localhost",
+    "database":"lego",
+    "user":"postgres",
+    "password":"########" 
+}
