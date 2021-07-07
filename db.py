@@ -23,33 +23,6 @@ def get_all_users(cur):
     cur.close()
     return rows
 
-def insert_user(cur, conn, name, item_list):
-    uid = str(uuid.uuid4())
-    stmt = f"INSERT INTO users(id, uname, item1, item2, item3) VALUES(%s,%s,%s,%s,%s)"
-    vals = (uid, name, item_list[0],item_list[1],item_list[2])
-    try:
-        cur.execute(stmt, vals)
-        conn.commit()
-        cur.close()
-        print("Insert successful!")
-    except (Exception, psycopg2.DatabaseError) as error:
-        print("Error: ", error)
-    finally:
-        if conn is not None:
-            conn.close()
-#TODO
-#def update_user(cur, conn, uid, item_list):
-#    usr = select * from users where uid == uid
-#    stmt = f"update user blah blah (item1,item2,item3) values(%s,%s,%s)"
-#    try:
-#        update
-#    except (Exception, pyscopg2.DatabaseError) as error:
-#        print("Error: ", error)
-#    finally:
-#        if conn is not None:
-#            conn.close()
-    
-
 
 
 
