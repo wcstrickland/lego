@@ -3,7 +3,6 @@ from datetime import datetime
 
 class User:
 
-
     def __init__(self, uid, uname, i1, i2, i3):
         self.uid = uid
         self.uname = uname
@@ -31,7 +30,8 @@ class User:
             conn.commit()
 #            print(f"\nInsert {self.uname} successful!\n")
         except (Exception, psycopg2.DatabaseError) as error:
-            print("User.insert Error: ", error)
+            with open("error_log.txt", "a") as f:
+                f.write(f"{self.uname} User.insert Error: ", error)
 
 
     def get_stock_report(self, cur):
@@ -47,7 +47,10 @@ class User:
                 items.append(item)
             return StockReport(self.uid, self.uname, *items)
         except (Exception, psycopg2.DatabaseError) as error:
-            print(f"Error getting stock report for {self.uname}:", error)
+            with open("error_log.txt", "a") as f:
+                now  = datetime.now()
+                fmt_time = now.strftime("%H:%M:%S  %m-%d-%Y")
+                f.write(f"{fmt_time} : {self.uname} get_stock_report Error: ", error)
         
 
 
@@ -89,17 +92,24 @@ class StockReport:
             conn.commit()
 #            print("Insert Successful!")
         except (Exception, psycopg2.DatabaseError) as error:
-            print("StockReport.insert Error: ", error)
+            with open("error_log.txt", "a") as f:
+                now  = datetime.now()
+                fmt_time = now.strftime("%H:%M:%S  %m-%d-%Y")
+                f.write(f"{fmt_time} : {self.uname} StockReport.insert Error: ", error)
 
 
 def get_all_users(cur):
     users = []
     cur.execute("SELECT * FROM users")
-    rows = cur.fetchall()
-    for row in rows:
-        user = User(*row)
-        users.append(user)
+    while True:
+        row = cur.fetchone()
+        if row:
+            user = User(*row)
+            users.append(user)
+        else:
+            break
     return users
+
 
 def get_all_reports(cur, conn):
     tables = []
@@ -109,6 +119,4 @@ def get_all_reports(cur, conn):
         stock_report  = user.get_stock_report(cur)
         tables.append(stock_report)
     return tables
-        
-
         
