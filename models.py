@@ -29,22 +29,25 @@ class User:
         try:
             cur.execute(stmt, vals)
             conn.commit()
-            print("Insert successful!")
+#            print(f"\nInsert {self.uname} successful!\n")
         except (Exception, psycopg2.DatabaseError) as error:
             print("User.insert Error: ", error)
 
 
     def get_stock_report(self, cur):
-        stmt = f"SELECT * FROM {self.uname}"
-        cur.execute(stmt)
-        items = []
-        rows = cur.fetchall()
-        for row in rows:
-            item = {}        
-            item["item"] = row[0]
-            item["status"] = row[1]
-            items.append(item)
-        return StockReport(self.uid, self.uname, *items)
+        try:
+            stmt = f"SELECT * FROM {self.uname}"
+            cur.execute(stmt)
+            items = []
+            rows = cur.fetchall()
+            for row in rows:
+                item = {}        
+                item["item"] = row[0]
+                item["status"] = row[1]
+                items.append(item)
+            return StockReport(self.uid, self.uname, *items)
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(f"Error getting stock report for {self.uname}:", error)
         
 
 
@@ -61,7 +64,7 @@ class StockReport:
         self.items = (self.i1, self.i2, self.i3)
 
     def print(self):
-        print(f"\nid: {self.uid}\nname: {self.uname}")
+        print(f"\nid: {self.uid}\nname: {self.uname}\n")
         for item in self.items:
             print(item)
 
@@ -84,21 +87,25 @@ class StockReport:
             for item in self.items:
                 cur.execute(insert_statement, (item["item"], item["status"], fmt_time))
             conn.commit()
-            print("Insert Successful!")
+#            print("Insert Successful!")
         except (Exception, psycopg2.DatabaseError) as error:
             print("StockReport.insert Error: ", error)
 
 
 def get_all_users(cur):
+    users = []
     cur.execute("SELECT * FROM users")
     rows = cur.fetchall()
-    return rows
-
-def get_all_reports(cur):
-    tables = []
-    rows = get_all_users(cur)
     for row in rows:
         user = User(*row)
+        users.append(user)
+    return users
+
+def get_all_reports(cur, conn):
+    tables = []
+    users = get_all_users(cur)
+    for user in users:
+        cur = conn.cursor()
         stock_report  = user.get_stock_report(cur)
         tables.append(stock_report)
     return tables

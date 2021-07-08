@@ -2,67 +2,57 @@ import uuid
 import psycopg2
 import connect
 import models
+import random
+
+def clear_all_reports(cur):
+    users = models.get_all_users(cur)
+    success = 0
+    fail = 0
+    count = 0
+    for user in users:
+        count += 1
+        try:
+            cur.execute(f"drop table if exists {user.uname}")
+            success += 1
+        except:
+            print(f"something went wrong deleting {user.uname} table\nPerhaps they dont have a table yet?")
+            fail += 1
+    print(f"Done clearing reports: {success} and deleted, {fail} errors, {count - (success + fail)} not present")
+
+def clear_all_users(cur):
+    drop_stmt = "drop table if exists users"
+    create_stmt = "create table users(uid varchar(255),uname varchar(255),item1 varchar(255),item2 varchar(255),item3 varchar(255))"
+    cur.execute(drop_stmt)
+    print("table dropped: All users cleared ")
+    cur.execute(create_stmt)
+    print("table created: Blank users table ready. ")
+    
+
+    
 
 cur, conn = connect.db_connect()
 
-drop_stmt = "drop table if exists users"
-create_stmt = "create table users(uid varchar(255),uname varchar(255),item1 varchar(255),item2 varchar(255),item3 varchar(255))"
-
-cur.execute(drop_stmt)
-print("table dropped")
-cur.execute(create_stmt)
-print("table created")
-
-u1 = models.User(str(uuid.uuid4()), "bill", "888/999", "333/222", "444/666")
-u1.insert(cur, conn)
-u1.print()
-
-u2 = models.User(str(uuid.uuid4()), "connor", "333/333", "999/999", "121/121")
-u2.insert(cur, conn)
-u2.print()
-
-si1 = {
-    "item": "888/999",
-    "status": "true"
-}
-si2 = {
-    "item": "333/222",
-    "status": "true"
-}
-si3 = {
-    "item": "444/666",
-    "status": "false"
-}
-u1_results = [si1, si2, si3]
-
-u1_stock = models.StockReport(u1.uid, u1.uname, *u1_results)
-u1_stock.insert(cur, conn)
+clear_all_users(cur)
+clear_all_reports(cur)
 
 
-si1 = {
-    "item": "333/333",
-    "status": "true"
-}
-si2 = {
-    "item": "999/999",
-    "status": "false"
-}
-si3 = {
-    "item": "121/121",
-    "status": "false"
-}
-u2_results = [si1, si2, si3]
 
-u2_stock = models.StockReport(u2.uid, u2.uname, *u2_results)
-u2_stock.insert(cur, conn)
+name_choices = ["james", "kate", "pat", "tyler", "justin", "jason", "anthony", "caroline", "april", "josh", "armstrong", "hamid", "pickles"]
 
-u1_stock_report = u1.get_stock_report(cur)
-u1_stock_report.print()
+item_choices = ["8999/2343434", "999/999","2323434/23413133", "1111/111", "8823848348/123213312",  "222/2222", "6253170/61252", "6284589/35381", "6247895/24307", "6226927/23405", "6223171/99206", "6220561/30166"]
 
-tables = models.get_all_reports(cur)
-for stock_report in tables:
-    stock_report.print()
+for i in range(20):
+    rand_name = random.choice(name_choices) + str(random.randint(0, 999))
+    rand_items = (random.choice(item_choices),random.choice(item_choices),random.choice(item_choices))
+    user = models.User(str(uuid.uuid4()), rand_name, *rand_items)
+    user.insert(cur, conn)
+
+users = models.get_all_users(cur)
+for i, user in enumerate(users):
+    print("\n", i, ': ')
+    user.print()
+    
+
 
 cur.close()
 conn.close()
-
