@@ -35,7 +35,7 @@ def check(user):
 
 
 
-
+user_file = sys.argv[1]
 cur, conn  = connect.db_connect()
 
 #       headless
@@ -52,23 +52,31 @@ continue_button.click()
 accept_all_button = WebDriverWait(driver, timeout=20).until(lambda d: d.find_element_by_css_selector("button.aKFCv:nth-child(2)"))
 accept_all_button.click()
 
-users = models.get_all_users(cur)
 # setup toolbar
 bar_width = len(users)
 sys.stdout.write("[%s]" % (" " * bar_width))
 sys.stdout.flush()
 sys.stdout.write("\b" * (bar_width+1)) 
 
-for user in users:
-    stock_report = check(user)
-    stock_report.insert(cur, conn)
-    sys.stdout.write("=")
-    sys.stdout.flush()
-sys.stdout.write("]\n")
+with open(user_file, "r") as f:
+    for line in f:
+        row = cur.execute(f"SELECT * FROM users WHERE uname = {line}") 
+        user = models.User(*row)
+        stock_report = check(user)
+        stock_report.insert(cur,conn)
+        sys.stdout.write("=")
+        sys.stdout.flush()
+    sys.stdout.write("]\n")
+
+#users = models.get_all_users(cur)
+#for user in users:
+#    stock_report = check(user)
+#    stock_report.insert(cur, conn)
+#    sys.stdout.write("=")
+#    sys.stdout.flush()
+#sys.stdout.write("]\n")
 
         
-
-
 driver.quit()
 cur.close()
 conn.close()
