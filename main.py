@@ -10,6 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.expected_conditions import presence_of_element_located
 from selenium.webdriver.firefox.options import Options
 import psycopg2
+from psycopg2 import sql
 import connect
 import models
 
@@ -52,29 +53,27 @@ continue_button.click()
 accept_all_button = WebDriverWait(driver, timeout=20).until(lambda d: d.find_element_by_css_selector("button.aKFCv:nth-child(2)"))
 accept_all_button.click()
 
+user_count = 0
+with open(user_file, "r") as f:
+    for line in f:
+        user_count += 1
+
 # setup toolbar
-bar_width = len(users)
+bar_width = user_count
 sys.stdout.write("[%s]" % (" " * bar_width))
 sys.stdout.flush()
 sys.stdout.write("\b" * (bar_width+1)) 
 
 with open(user_file, "r") as f:
     for line in f:
-        row = cur.execute(f"SELECT * FROM users WHERE uname = {line}") 
+        split_line = line.split(',')
+        row = [word.strip("\n") for word in split_line]
         user = models.User(*row)
         stock_report = check(user)
         stock_report.insert(cur,conn)
         sys.stdout.write("=")
         sys.stdout.flush()
     sys.stdout.write("]\n")
-
-#users = models.get_all_users(cur)
-#for user in users:
-#    stock_report = check(user)
-#    stock_report.insert(cur, conn)
-#    sys.stdout.write("=")
-#    sys.stdout.flush()
-#sys.stdout.write("]\n")
 
         
 driver.quit()
