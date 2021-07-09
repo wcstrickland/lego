@@ -3,27 +3,40 @@ from datetime import datetime
 
 class User:
 
-    def __init__(self, uid, uname, i1, i2, i3):
+#    def __init__(self, uid, uname, i1, i2, i3):
+#        self.uid = uid
+#        self.uname = uname
+#        self.i1 = i1
+#        self.i2 = i2
+#        self.i3 = i3
+#        self.items = (self.i1, self.i2, self.i3)
+
+    def __init__(self, uid, uname, *items):
         self.uid = uid
         self.uname = uname
-        self.i1 = i1
-        self.i2 = i2
-        self.i3 = i3
-        self.items = (self.i1, self.i2, self.i3)
+        self.items = [item for item in items]
 
     def print(self):
         print(f"\nid: {self.uid}\nname: {self.uname}\n items: {self.items}")
 
 
-    def update(self, i1,i2,i3):
-        self.i1 = i1
-        self.i2 = i2
-        self.i3 = i3
-        self.items = (self.i1, self.i2, self.i3)
+#    def update(self, i1,i2,i3):
+#        self.i1 = i1
+#        self.i2 = i2
+#        self.i3 = i3
+#        self.items = (self.i1, self.i2, self.i3)
 
+    def update(self, *items):
+        self.items = [item for item in items]
 
     def insert(self, cur, conn):
-        stmt = f"INSERT INTO users(uid, uname, item1, item2, item3) VALUES(%s,%s,%s,%s,%s)"
+        starters = "%s, %s,"
+        placeholders = ",".join(["%s" for x in range(len(self.items))])
+        starters += placeholders
+        fields = "uid, uname,"
+        field_items = ",".join([("item"+str(x+1))for x in range(len(self.items))])
+        fields += field_items
+        stmt = f"INSERT INTO users({fields}) VALUES({starters})"
         vals = (self.uid, self.uname, *self.items)
         try:
             cur.execute(stmt, vals)
@@ -31,7 +44,7 @@ class User:
 #            print(f"\nInsert {self.uname} successful!\n")
         except (Exception, psycopg2.DatabaseError) as error:
             with open("error_log.txt", "a") as f:
-                f.write(f"{self.uname} User.insert Error: ", error)
+                print(f"{self.uname} User.insert Error: ", error, file = f)
 
 
     def get_stock_report(self, cur):
@@ -57,14 +70,21 @@ class User:
 
 
 class StockReport:
-    def __init__(self, uid, uname, i1, i2, i3):
+#    def __init__(self, uid, uname, i1, i2, i3):
+#        self.uid = uid
+#        self.uname = uname
+#        # each item is a dict{"item": , "status": str(bool)}
+#        self.i1 = i1
+#        self.i2 = i2
+#        self.i3 = i3
+#        self.items = (self.i1, self.i2, self.i3)
+
+    def __init__(self, uid, uname, *items):
         self.uid = uid
         self.uname = uname
         # each item is a dict{"item": , "status": str(bool)}
-        self.i1 = i1
-        self.i2 = i2
-        self.i3 = i3
-        self.items = (self.i1, self.i2, self.i3)
+        self.items = [item for item in items]
+
 
     def print(self):
         print(f"\nid: {self.uid}\nname: {self.uname}\n")
@@ -72,11 +92,14 @@ class StockReport:
             print(item)
 
 
-    def update(self, i1,i2,i3):
-        self.i1 = i1
-        self.i2 = i2
-        self.i3 = i3
-        self.items = (self.i1, self.i2, self.i3)
+#    def update(self, i1,i2,i3):
+#        self.i1 = i1
+#        self.i2 = i2
+#        self.i3 = i3
+#        self.items = (self.i1, self.i2, self.i3)
+
+    def update(self, *items):
+        self.items = [item for item in items]
 
     def insert(self, cur, conn):
         drop_statement = f"drop table if exists {self.uname}"
