@@ -3,13 +3,6 @@ from datetime import datetime
 
 class User:
 
-#    def __init__(self, uid, uname, i1, i2, i3):
-#        self.uid = uid
-#        self.uname = uname
-#        self.i1 = i1
-#        self.i2 = i2
-#        self.i3 = i3
-#        self.items = (self.i1, self.i2, self.i3)
 
     def __init__(self, uid, uname, *items):
         self.uid = uid
@@ -19,12 +12,6 @@ class User:
     def print(self):
         print(f"\nid: {self.uid}\nname: {self.uname}\n items: {self.items}")
 
-
-#    def update(self, i1,i2,i3):
-#        self.i1 = i1
-#        self.i2 = i2
-#        self.i3 = i3
-#        self.items = (self.i1, self.i2, self.i3)
 
     def update(self, *items):
         self.items = [item for item in items]
@@ -41,7 +28,6 @@ class User:
         try:
             cur.execute(stmt, vals)
             conn.commit()
-#            print(f"\nInsert {self.uname} successful!\n")
         except (Exception, psycopg2.DatabaseError) as error:
             with open("error_log.txt", "a") as f:
                 print(f"{self.uname} User.insert Error: ", error, file = f)
@@ -70,14 +56,6 @@ class User:
 
 
 class StockReport:
-#    def __init__(self, uid, uname, i1, i2, i3):
-#        self.uid = uid
-#        self.uname = uname
-#        # each item is a dict{"item": , "status": str(bool)}
-#        self.i1 = i1
-#        self.i2 = i2
-#        self.i3 = i3
-#        self.items = (self.i1, self.i2, self.i3)
 
     def __init__(self, uid, uname, *items):
         self.uid = uid
@@ -91,12 +69,6 @@ class StockReport:
         for item in self.items:
             print(item)
 
-
-#    def update(self, i1,i2,i3):
-#        self.i1 = i1
-#        self.i2 = i2
-#        self.i3 = i3
-#        self.items = (self.i1, self.i2, self.i3)
 
     def update(self, *items):
         self.items = [item for item in items]
