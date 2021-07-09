@@ -36,15 +36,20 @@ def check(user):
 
 
 
-user_file = sys.argv[1]
+num_of_sections = int(sys.argv[1])
+section = int(sys.argv[2])
+if section > num_of_sections:
+    print("section out of range")
+#   TODO raise an error here
 cur, conn  = connect.db_connect()
+all_users = models.get_all_users(cur)
+section_size = (len(all_users)//num_of_sections)
 
-#       headless
+#       webdriver
 options = Options()
 options.headless = True
 driver = webdriver.Firefox(options=options)
 
-#driver = webdriver.Firefox()
 
 #   dealing with cookie agreements
 driver.get("https://www.lego.com/en-us/page/static/pick-a-brick")
@@ -53,27 +58,29 @@ continue_button.click()
 accept_all_button = WebDriverWait(driver, timeout=20).until(lambda d: d.find_element_by_css_selector("button.aKFCv:nth-child(2)"))
 accept_all_button.click()
 
-user_count = 0
-with open(user_file, "r") as f:
-    for line in f:
-        user_count += 1
+# (section_size * (section - 1)): (section_size * section) 
 
 # setup toolbar
-bar_width = user_count
+bar_width = section_size
 sys.stdout.write("[%s]" % (" " * bar_width))
 sys.stdout.flush()
 sys.stdout.write("\b" * (bar_width+1)) 
 
-with open(user_file, "r") as f:
-    for line in f:
-        split_line = line.split(',')
-        row = [word.strip("\n") for word in split_line]
-        user = models.User(*row)
+if section == num_of_sections:
+    for user in all_users[section_size * (section - 1):]:
         stock_report = check(user)
         stock_report.insert(cur,conn)
         sys.stdout.write("=")
         sys.stdout.flush()
     sys.stdout.write("]\n")
+else:
+    for user in all_users[section_size * (section - 1):section_size * section]:
+        stock_report = check(user)
+        stock_report.insert(cur,conn)
+        sys.stdout.write("=")
+        sys.stdout.flush()
+    sys.stdout.write("]\n")
+
 
         
 driver.quit()

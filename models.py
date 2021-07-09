@@ -101,6 +101,8 @@ class StockReport:
 def get_all_users(cur):
     users = []
     cur.execute("SELECT * FROM users")
+    # it may be tempting to use fetchall() and use a list comp. Dont!
+    # any error will cause a halt over the rest of result set.
     while True:
         row = cur.fetchone()
         if row:
