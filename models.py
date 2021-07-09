@@ -50,7 +50,7 @@ class User:
             with open("error_log.txt", "a") as f:
                 now  = datetime.now()
                 fmt_time = now.strftime("%H:%M:%S  %m-%d-%Y")
-                f.write(f"{fmt_time} : {self.uname} get_stock_report Error: ", error)
+                print(f"{fmt_time} : {self.uname} get_stock_report Error: ", error, file = f)
         
 
 
@@ -95,7 +95,7 @@ class StockReport:
             with open("error_log.txt", "a") as f:
                 now  = datetime.now()
                 fmt_time = now.strftime("%H:%M:%S  %m-%d-%Y")
-                f.write(f"{fmt_time} : {self.uname} StockReport.insert Error: ", error)
+                print(f"{fmt_time} : {self.uname} StockReport.insert Error: ", error, file = f )
 
 
 def get_all_users(cur):
