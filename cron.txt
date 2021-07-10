@@ -1,0 +1,5 @@
+*/5 * * * * home/bill/py/lego/logdump.sh >/dev/null 2>&1
+0 * * * * home/bill/py/lego/main.py 4 1 >/dev/null 2>&1
+15 * * * * home/bill/py/lego/main.py 4 2 >/dev/null 2>&1
+30 * * * * home/bill/py/lego/main.py 4 3 >/dev/null 2>&1
+45 * * * * home/bill/py/lego/main.py 4 4 >/dev/null 2>&1

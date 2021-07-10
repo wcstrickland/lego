@@ -6,8 +6,16 @@ class User:
 
     def __init__(self, uid, uname, *items):
         self.uid = uid
+        prohib = ";()&,:[]{}"
+        for char in prohib:
+            uname = uname.replace(char, "_")
         self.uname = uname
-        self.items = [item for item in items]
+        clean = []
+        for item in items:
+            for char in prohib:
+                item = item.replace(char, "")
+            clean.append(item)
+        self.items = [item for item in clean]
 
     def print(self):
         print(f"\nid: {self.uid}\nname: {self.uname}\n items: {self.items}")
@@ -23,6 +31,7 @@ class User:
         fields = "uid, uname,"
         field_items = ",".join([("item"+str(x+1))for x in range(len(self.items))])
         fields += field_items
+        # sql injection risk but
         stmt = f"INSERT INTO users({fields}) VALUES({starters})"
         vals = (self.uid, self.uname, *self.items)
         try:
@@ -51,8 +60,6 @@ class User:
                 fmt_time = now.strftime("%H:%M:%S  %m-%d-%Y")
                 print(f"{fmt_time} : {self.uname} get_stock_report Error: ", error, file = f)
         
-
-
 
 
 class StockReport:
