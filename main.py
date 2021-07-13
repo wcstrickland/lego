@@ -47,9 +47,9 @@ all_users = models.get_all_users(cur)
 section_size = (len(all_users)//num_of_sections)
 
 #       webdriver
-options = Options()
+options = webdriver.ChromeOptions()
 options.headless = True
-driver = webdriver.Firefox(options=options)
+driver = webdriver.Chrome(options=options)
 
 
 #   dealing with cookie agreements
