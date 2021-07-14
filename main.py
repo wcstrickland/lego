@@ -29,9 +29,9 @@ def check(user):
             time.sleep(1)
 #            driver.find_element_by_css_selector("li.ElementsListstyles__Leaf-d5a7o-1:nth-child(1) > div:nth-child(1) > div:nth-child(4) > div:nth-child(1) > button:nth-child(1)")
             driver.find_element_by_css_selector(".PickABrickPagestyles__NoResultsContainer-sc-18ajmw2-6")
-            result["status"] = "false"
+            result["status"] = "out of stock"
         except:
-            result["status"] = "true"
+            result["status"] = "in stock"
         results.append(result)
     return models.StockReport(user.uid, user.uname, *results) 
 
