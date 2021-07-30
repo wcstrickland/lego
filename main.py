@@ -20,18 +20,18 @@ def check(user):
     for item in user.items:
         result = {}
         result["item"] = item
-        if "/" not in item:
-            print(f"{item}: is not a valid lego item number format")
-            return
-        item_split = item.split(sep="/")
-        driver.get(f"https://www.lego.com/en-us/page/static/pick-a-brick?query={item_split[0]}%2F{item_split[1]}&page=1")
+        if "/" in item:
+            item_split = item.split(sep="/")
+            driver.get(f"https://www.lego.com/en-us/page/static/pick-a-brick?query={item_split[0]}%2F{item_split[1]}&page=1")
+        else:
+            driver.get(f"https://www.lego.com/en-us/page/static/pick-a-brick?query={item}&page=1")
         try:
             time.sleep(1)
 #            driver.find_element_by_css_selector("li.ElementsListstyles__Leaf-d5a7o-1:nth-child(1) > div:nth-child(1) > div:nth-child(4) > div:nth-child(1) > button:nth-child(1)")
             driver.find_element_by_css_selector(".PickABrickPagestyles__NoResultsContainer-sc-18ajmw2-6")
-            result["status"] = "false"
+            result["status"] = "out of stock"
         except:
-            result["status"] = "true"
+            result["status"] = "in stock"
         results.append(result)
     return models.StockReport(user.uid, user.uname, *results) 
 
@@ -47,9 +47,9 @@ all_users = models.get_all_users(cur)
 section_size = (len(all_users)//num_of_sections)
 
 #       webdriver
-options = Options()
+options = webdriver.ChromeOptions()
 options.headless = True
-driver = webdriver.Firefox(options=options)
+driver = webdriver.Chrome(options=options)
 
 
 #   dealing with cookie agreements
